@@ -1,0 +1,10 @@
+AP = 0;//Analog pin number.
+
+
+setup(){
+  Serial.begin(9600);//Setup serial.
+}
+
+loop(){
+  
+}
