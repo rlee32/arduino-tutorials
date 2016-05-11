@@ -7,8 +7,9 @@ const int PIN_MOTOR = 11; // pwm-capable output pin.
 const int PIN_POT = 0; // potentiometer analog input pin.
 const int PIN_SAFETY = 1; // motor-on digital input pin.
 // Potentiometer constants.
-// constrain() is used on range, so ADC_MAX should be a little lower than 
-//  actual max, and ADC_MIN should be a little higher than actual min.
+// To ensure maximum and minimum are reached, 
+//  ADC_MAX should be a little lower than actual max, and
+//  ADC_MIN should be a little higher than actual min.
 // We divide signal values into finite levels to prevent jumpiness.
 const int ADC_MAX = 900; // ADC units (0 to 1023, inclusive).
 const int ADC_MIN = 100; // ADC units (0 to 1023, inclusive).
@@ -16,7 +17,7 @@ const int ADC_LEVELS = 15; // We divide signal values into finite levels.
 // Pulse width constants.
 const int WIDTH_MAX = 2000; // microseconds.
 const int WIDTH_MIN = 1000; // microseconds.
-const int WIDTHS[ADC_LEVELS];
+int WIDTHS[ADC_LEVELS] = {  };
 // Other.
 const int LOOP_DELAY = 50; // Just in case the update is too frequent.
 
@@ -62,24 +63,6 @@ void loop()
 
 void debug()
 {
-  // switch ( received )
-  // {
-  //   case ',':
-  //     //Serial.print("Azimuth: ");
-  //     //Serial.println(pulse);
-  //     break;
-  //   case ';':
-  //     //Serial.print("Elevation: ");
-  //     //Serial.println(pulse);
-  //     break;
-  //   case '.':
-  //     //Serial.print("C1: ");
-  //     //Serial.println(pulse);
-  //     break;
-  //   case ':':
-  //     break;
-  // }
-  // delay(1000);
 }
 
 

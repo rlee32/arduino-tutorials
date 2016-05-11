@@ -1,0 +1,9 @@
+v 20130925 2
+C 40000 40000 0 0 0 title-B.sym
+C 45500 47300 1 0 0 pot-bourns.sym
+{
+T 46300 48200 5 10 0 0 0 0 1
+device=VARIABLE_RESISTOR
+T 46100 47700 5 10 1 1 0 0 1
+refdes=10k
+}
