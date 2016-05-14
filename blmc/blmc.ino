@@ -33,7 +33,6 @@ Servo motor;
 
 void setup()
 {
-//  debug_setup();
   pinMode(PIN_POT, INPUT);
   pinMode(PIN_SAFETY, INPUT);
   motor.attach(PIN_MOTOR);
@@ -45,6 +44,7 @@ void setup()
   // Initialize indicator light.
   for(int i = 0; i < 3; ++i) pinMode( PIN_RGB[i], OUTPUT );
   set_indicator_light_pwm( 0 );
+//  debug_setup();
 }
 
 void loop()
@@ -55,10 +55,10 @@ void loop()
   }
   else
   {
-//    debug();
     off();
   }
   delay( LOOP_DELAY );
+//    debug();
 }
 
 // Sets the ESC pulse width according to pot input.
