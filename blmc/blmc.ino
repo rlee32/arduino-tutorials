@@ -4,8 +4,9 @@
 
 // Pins.
 const int PIN_MOTOR = 11; // pwm-capable output pin.
+// Careful not to set to 0 or 1 when using Serial.print().
+const int PIN_SAFETY = 10; // motor-on digital input pin.
 const int PIN_POT = 0; // potentiometer analog input pin.
-const int PIN_SAFETY = 1; // motor-on digital input pin.
 // Potentiometer constants.
 // To ensure maximum and minimum are reached, 
 //  ADC_MAX should be a little lower than actual max, and
@@ -25,6 +26,7 @@ Servo motor;
 
 void setup()
 {
+//  debug_setup();
   pinMode(PIN_POT, INPUT);
   pinMode(PIN_SAFETY, INPUT);
   motor.attach(PIN_MOTOR);
@@ -36,33 +38,41 @@ void setup()
 }
 
 // Sets the ESC pulse width according to pot input.
-void throttle()
+int throttle()
 {
   int level = map( analogRead( PIN_POT ),
     ADC_MIN, ADC_MAX,
     0, ADC_LEVELS-1 );
   level = constrain( level, 0, ADC_LEVELS-1 );
   motor.writeMicroseconds( WIDTHS[level] );
+  return WIDTHS[level];
 }
 
 void off() { motor.writeMicroseconds( WIDTH_MIN ); }
 
 void loop()
 {
-  if( digitalRead( PIN_SAFETY ) == HIGH )
+  if( digitalRead( PIN_SAFETY ) ) //== HIGH )
   {
     throttle();
   }
   else
   {
+//    debug();
     off();
   }
   delay( LOOP_DELAY );
-  // debug();
 }
 
+void debug_setup()
+{
+  Serial.begin( 9600 );
+}
 void debug()
 {
+  Serial.println( throttle() );
+  Serial.println( digitalRead( PIN_SAFETY ) );
+  delay( 1000 );
 }
 
 
