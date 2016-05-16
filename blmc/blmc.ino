@@ -3,11 +3,11 @@
 #include <Servo.h>
 
 // Pins.
-const int PIN_MOTOR = 11; // pwm-capable output pin.
-// Careful not to set to 0 or 1 when using Serial.print().
-const int PIN_SAFETY = 8; // motor-on digital input pin.
-const int PIN_RGB[3] = { 6, 9, 10 }; // for indicator light.
+const int PIN_MOTOR = 6; // pwm-capable output pin.
+// Careful not to set PIN_SAFETY to 0 or 1 if using Serial.print().
+const int PIN_SAFETY = 7; // motor-on digital input pin (may use analog pins).
 const int PIN_POT = 0; // potentiometer analog input pin.
+const int PIN_RGB[3] = { 9, 10, 11 }; // for indicator light.
 // Potentiometer constants.
 // To ensure maximum and minimum are reached, 
 //  ADC_MAX should be a little lower than actual max, and
