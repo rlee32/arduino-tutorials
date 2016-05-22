@@ -13,15 +13,13 @@ const int PIN_RGB[3] = { 9, 10, 11 }; // for indicator light.
 //  ADC_MAX should be a little lower than actual max, and
 //  ADC_MIN should be a little higher than actual min.
 // We divide signal values into finite levels to prevent jumpiness.
-const int ADC_MAX = 900; // ADC units (0 to 1023, inclusive).
-const int ADC_MIN = 100; // ADC units (0 to 1023, inclusive).
-const int ADC_LEVELS = 15; // We divide signal values into finite levels.
+const int ADC_MAX = 975; // ADC units (0 to 1023, inclusive).
+const int ADC_MIN = 25; // ADC units (0 to 1023, inclusive).
+const int ADC_LEVELS = 20; // We divide signal values into finite levels.
 // Pulse width constants.
-const int WIDTH_MAX = 2400; // microseconds.
-const int WIDTH_MIN = 600; // microseconds.
+const int WIDTH_MAX = 2500; // microseconds.
+const int WIDTH_MIN = 500; // microseconds.
 int WIDTHS[ADC_LEVELS] = {  };
-// Other.
-const int LOOP_DELAY = 50; // Just in case the update is too frequent.
 // LED indicator status lights, for binary output mode.
 // PWM output mode does not use these, and provides more colors.
 // For PWM output, the assumed scale is blue-to-red rainbow.
@@ -60,7 +58,7 @@ void loop()
   {
     off();
   }
-  delay( LOOP_DELAY );
+//  delay(50);
 //  debug();
 }
 
@@ -72,6 +70,7 @@ int throttle()
     0, ADC_LEVELS-1 );
   level = constrain( level, 0, ADC_LEVELS-1 );
   motor.writeMicroseconds( WIDTHS[level] );
+//  Serial.print(level);Serial.print(": ");Serial.println(WIDTHS[level]); delay(1000);
   const int* color = (level < ADC_LEVELS-1) ? COLOR_THRUST : COLOR_MAX;
   color = ( level ) ? color : COLOR_MIN;
   set_indicator_light( color );
