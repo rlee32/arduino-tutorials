@@ -6,7 +6,7 @@
 const int PIN_MOTOR = 6; // pwm-capable output pin.
 // Careful not to set PIN_SAFETY to 0 or 1 if using Serial.print().
 const int PIN_SAFETY = 7; // motor-on digital input pin (may use analog pins).
-const int PIN_POT = 0; // potentiometer analog input pin.
+const int PIN_POT = A0; // potentiometer analog input pin.
 const int PIN_RGB[3] = { 9, 10, 11 }; // for indicator light.
 // Potentiometer constants.
 // To ensure maximum and minimum are reached, 
@@ -17,17 +17,20 @@ const int ADC_MAX = 900; // ADC units (0 to 1023, inclusive).
 const int ADC_MIN = 100; // ADC units (0 to 1023, inclusive).
 const int ADC_LEVELS = 15; // We divide signal values into finite levels.
 // Pulse width constants.
-const int WIDTH_MAX = 2000; // microseconds.
-const int WIDTH_MIN = 1000; // microseconds.
+const int WIDTH_MAX = 2400; // microseconds.
+const int WIDTH_MIN = 600; // microseconds.
 int WIDTHS[ADC_LEVELS] = {  };
 // Other.
 const int LOOP_DELAY = 50; // Just in case the update is too frequent.
 // LED indicator status lights, for binary output mode.
 // PWM output mode does not use these, and provides more colors.
 // For PWM output, the assumed scale is blue-to-red rainbow.
-const int COLOR_READY[3] = {1,0,0};
-const int COLOR_THRUST[3] = {0,1,0};
-const int COLOR_MAX[3] = {0,0,1};
+// Turns out, using Servo library disables PWM pins on 9, 10, and 11.
+// Be usre to take into account common anode or common cathode setup.
+const int COLOR_READY[3] = {0,1,1};
+const int COLOR_THRUST[3] = {1,1,0};
+const int COLOR_MAX[3] = {1,0,1};
+const int COLOR_MIN[3] = {0,1,0};
 
 Servo motor;
 
@@ -44,7 +47,7 @@ void setup()
   // Initialize indicator light.
   for(int i = 0; i < 3; ++i) pinMode( PIN_RGB[i], OUTPUT );
   set_indicator_light_pwm( 0 );
-//  debug_setup();
+//  Serial.begin( 9600 );
 }
 
 void loop()
@@ -58,7 +61,7 @@ void loop()
     off();
   }
   delay( LOOP_DELAY );
-//    debug();
+//  debug();
 }
 
 // Sets the ESC pulse width according to pot input.
@@ -69,14 +72,16 @@ int throttle()
     0, ADC_LEVELS-1 );
   level = constrain( level, 0, ADC_LEVELS-1 );
   motor.writeMicroseconds( WIDTHS[level] );
-  set_indicator_light_pwm( level );
+  const int* color = (level < ADC_LEVELS-1) ? COLOR_THRUST : COLOR_MAX;
+  color = ( level ) ? color : COLOR_MIN;
+  set_indicator_light( color );
   return WIDTHS[level];
 }
 
 void off()
 {
   motor.writeMicroseconds( WIDTH_MIN );
-  set_indicator_light_pwm( 0 );
+  set_indicator_light( COLOR_READY );
 }
 
 // Status indicator light functions.
@@ -90,7 +95,14 @@ void set_indicator_light(const int rgb[3])
 // For PWM output
 void set_indicator_light_pwm(const int rgb[3])
 {
-  for(int i = 0; i < 3; ++i) analogWrite( PIN_RGB[i], rgb[i] );
+//  Serial.println("RGB:");
+  for(int i = 0; i < 3; ++i)
+  {
+    analogWrite( PIN_RGB[i], rgb[i] );
+//    Serial.print(PIN_RGB[i]);
+//    Serial.print(": ");
+//    Serial.println(rgb[i]);
+  }
 }
 
 // For PWM output
@@ -102,26 +114,6 @@ void set_indicator_light_pwm(int level)
     int rgb[3] = { 0, 0, 0 };
   scalar2rgb(scale_value, rgb);
   set_indicator_light_pwm( rgb );
-}
-
-// For binary output
-void set_indicator_light(int level)
-{
-  if ( level )
-  {
-    if( level == ADC_LEVELS-1 )
-    {
-      set_indicator_light(COLOR_MAX);
-    }
-    else
-    {
-      set_indicator_light(COLOR_THRUST);
-    }
-  }
-  else
-  {
-    set_indicator_light(COLOR_READY);
-  }
 }
 
 // Blue-to-red rainbow color scale, often used in CFD.
@@ -168,14 +160,9 @@ void scalar2rgb( double val, int rgb[3] )
 
 // Debugging functions.
 
-void debug_setup()
-{
-  Serial.begin( 9600 );
-}
-
 void debug()
 {
-  Serial.println( throttle() );
+//  Serial.println( throttle() );
   Serial.println( digitalRead( PIN_SAFETY ) );
   delay( 1000 );
 }
