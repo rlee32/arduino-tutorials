@@ -17,8 +17,8 @@ const int ADC_MAX = 975; // ADC units (0 to 1023, inclusive).
 const int ADC_MIN = 25; // ADC units (0 to 1023, inclusive).
 const int ADC_LEVELS = 20; // We divide signal values into finite levels.
 // Pulse width constants.
-const int WIDTH_MAX = 2500; // microseconds.
-const int WIDTH_MIN = 500; // microseconds.
+const int WIDTH_MAX = 2400; // microseconds.
+const int WIDTH_MIN = 600; // microseconds.
 int WIDTHS[ADC_LEVELS] = {  };
 // LED indicator status lights, for binary output mode.
 // PWM output mode does not use these, and provides more colors.
