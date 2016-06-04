@@ -4,10 +4,12 @@ This repository can be found at:
 https://github.com/rlee32/arduino-tutorials/tree/master/project_name
 
 
+## Description
 
 
 
-Tested on Arduino Uno
+## Hardware  
+1. Arduino Uno  
 
 
 

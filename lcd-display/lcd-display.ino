@@ -21,12 +21,17 @@ const static int D7_PIN = 2;
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(RS_PIN, ENABLE_PIN, D4_PIN, D5_PIN, D6_PIN, D7_PIN);
 
-void setup() {
+void setup()
+{
   lcd.begin(LCD_COLUMNS, LCD_ROWS);
   lcd.print("hello, world!");
 }
 
-void loop() {
+void loop()
+{
   lcd.setCursor(0, 1);
   lcd.print(millis() / 1000);
 }
+
+
+
