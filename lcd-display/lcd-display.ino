@@ -7,8 +7,8 @@
 const static int LCD_COLUMNS = 20;
 const static int LCD_ROWS = 4;
 // Pins to recieve LCD outputs
-const static int RS_PIN = 12;
-const static int ENABLE_PIN = 11;
+const static int RS_PIN = 7;
+const static int ENABLE_PIN = 6;
 const static int D4_PIN = 5;
 const static int D5_PIN = 4;
 const static int D6_PIN = 3;
@@ -29,9 +29,24 @@ void setup()
 
 void loop()
 {
-  lcd.setCursor(0, 1);
-  lcd.print(millis() / 1000);
+  lcd_print(1, (int) (millis() / 1000) );
+  lcd_print(3, "Testing out this row");
 }
 
+void lcd_print(int row, const char* literal)
+{
+  lcd.setCursor(0, row);
+  lcd.print(literal);
+}
+void lcd_print(int row, double number)
+{
+  lcd.setCursor(0, row);
+  lcd.print(number);
+}
+void lcd_print(int row, int number)
+{
+  lcd.setCursor(0, row);
+  lcd.print(number);
+}
 
 
