@@ -20,6 +20,8 @@ The HX711 Library was used. It can be installed from the Arduino IDE via
 After installation, the appropriate header can be added via 
 the 'Include Library...' popout menu.  
 
+schematic.sch: Uses digital I/O pins to mimic Vcc and Ground. This is the only difference with schematic_old.sch.   
+
 ## Hardware
 
 1. Arduino Uno  

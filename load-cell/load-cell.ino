@@ -10,8 +10,11 @@
 
 // Amplified signal value to physical value
 const static double CALIBRATION_CONSTANT = -7050.0;
-const static int DAT_PIN = 3;
-const static int CLK_PIN = 2;
+
+// Highest pin in a 4-pin connector.
+// Pins adjacent in this order: VCC,DAT,CLK,GND 
+const static int VCC_PIN = 11;
+
 
 Q2HX711 scale(DAT_PIN, CLK_PIN);
 
@@ -20,6 +23,10 @@ void setup()
   Serial.begin(9600);
   Serial.println("HX711 scale demo");
   Serial.println("Readings:");
+  pinMode(VCC_PIN,OUTPUT); // VCC
+  pinMode(VCC_PIN-1,OUTPUT); // DAT
+  pinMode(VCC_PIN-2,OUTPUT); // CLK
+  pinMode(VCC_PIN-3,OUTPUT); // GND
 }
 
 void loop()
