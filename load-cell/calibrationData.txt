@@ -1,0 +1,2 @@
+# Weight, Raw Reading (Approximate)
+9.5 lbs (~0.2 lbs tolerance), 938200 (~4 sigfigs)
