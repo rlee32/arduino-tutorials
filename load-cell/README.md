@@ -20,7 +20,12 @@ The HX711 Library was used. It can be installed from the Arduino IDE via
 After installation, the appropriate header can be added via 
 the 'Include Library...' popout menu.  
 
-schematic.sch: Uses digital I/O pins to mimic Vcc and Ground. This is the only difference with schematic_old.sch.   
+## File Descriptions
+
+1. load-cell.ino: the code to upload to arduino.  
+2. LoadCell.cpp/.h: a class that represents the load cell.  
+3. schematic.sch: diagram of electronic connections.  
+4. calibrationData.txt: sample values obtained with one of my load cells. 
 
 ## Hardware
 

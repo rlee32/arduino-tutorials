@@ -1,4 +1,6 @@
 # Weight, Raw Reading
 
 12.0 lbs (~0.2 lbs tolerance, 2 readings of 11.9 and 12.1), 1202300 (~5 sigfigs)
-(OLD) 9.5 lbs (~0.2 lbs tolerance), 938200 (~4 sigfigs)
+
+
+
