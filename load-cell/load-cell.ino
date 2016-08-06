@@ -13,11 +13,7 @@
 
 const static int VCC_PIN = 11;
 const static int TARE_PIN = 7;
-<<<<<<< HEAD
-const static double CALIBRATION_CONSTANT = 0.00000998086; // 0.00001012577; 
-=======
-const static double CALIBRATION_CONSTANT = 0.00001012577; 
->>>>>>> 6492ac7b780d85edb13a781518017cc0fa479769
+const static double CALIBRATION_CONSTANT = 0.00000998086; // 0.00001012577;
 LoadCell loadCell(VCC_PIN, TARE_PIN, CALIBRATION_CONSTANT);
 
 void setup()
