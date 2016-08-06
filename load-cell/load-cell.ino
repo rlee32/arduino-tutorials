@@ -25,11 +25,7 @@ void setup()
 void loop()
 {
   loadCell.getLoad();
-<<<<<<< HEAD
   // loadCell.checkTare();
-=======
-  loadCell.checkTare();
->>>>>>> 6492ac7b780d85edb13a781518017cc0fa479769
 }
 
 
