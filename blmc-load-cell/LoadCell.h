@@ -93,10 +93,3 @@ private:
   void startupDelay();
   int tare();
 };
-
-
-
-
-
-
-

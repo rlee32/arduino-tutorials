@@ -48,7 +48,7 @@ void LoadCell::setup()
 {
   pinMode(pins.vcc, OUTPUT);
   pinMode(pins.gnd, OUTPUT);
-  pinMode(pins.tare, INPUT);
+  if(pins.tare > -1) pinMode(pins.tare, INPUT);
   digitalWrite(pins.vcc, HIGH);
   digitalWrite(pins.gnd, LOW);
   startupDelay();
@@ -65,7 +65,10 @@ double LoadCell::getLoad()
 int LoadCell::checkTare()
 {
   int measurement = 0;
-  if( digitalRead(pins.tare) ) measurement = tare();
+  if(pins.tare > -1)
+  {
+    if( digitalRead(pins.tare) ) measurement = tare();
+  }
   return measurement;
 }
 
