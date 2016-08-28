@@ -9,7 +9,7 @@
  * After installation, the appropriate header can be added via 
  *   the 'Include Library...' popout menu.
 **/
-#include "LoadCell.h" // Look inside for usage details if needed.
+#include "LoadCell.h"
 
 const static int VCC_PIN = 11;
 const static int TARE_PIN = 7;
