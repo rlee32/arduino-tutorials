@@ -9,7 +9,7 @@ Esc<Levels> esc(-1, 4, 2, 1000, 2000);
 Pot pot(A0, 23, 1000, 0, Levels - 1);
 MomentaryPushButton safety(7);
 RgbLed led(9, 10, 11);
-LoadCell loadCell(A5, 12, 0.00000998086);
+LoadCell loadCell(A5, -1, 0.00000998086, 7);
 
 // RGB LED colors.
 const RgbLed::Color readyColor(0,1,1);
@@ -44,12 +44,12 @@ void loop()
         led.set(midColor);
         break;
     }
+    loadCell.getLoad();
   }
   else
   {
     esc.off();
     led.set(readyColor);
   }
-  loadCell.getLoad();
 }
 

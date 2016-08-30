@@ -42,7 +42,7 @@ Esc<Levels>::Esc(int vccPin, int signalPin, int gndPin,
 template<int Levels>
 void Esc<Levels>::setup()
 {
-  pwmDevice.attach(signalPin);
+  if(signalPin > -1) pwmDevice.attach(signalPin);
   // simulate vcc
   if(vccPin > -1)
   {

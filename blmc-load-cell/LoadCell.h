@@ -33,13 +33,14 @@ public:
   //   VCC, DAT, CLK, Ground (GND)
   //   This order matches the SparkFun breakout board for load cells:
   //    https://www.sparkfun.com/products/13879
-  LoadCell(int vccPin, int tarePin, double calibrationConstant);
+  LoadCell(int vccPin, int tarePin, double calibrationConstant, 
+    int checkPin);
   // This ctor gives options for power-on delay and printing.
   LoadCell(int vccPin, int tarePin, double calibrationConstant, 
-    int powerOnDelay, bool print);
+    int powerOnDelay, bool print, int checkPin);
   // This ctor is available if you want to manually specify pins.
   LoadCell(int vccPin, int datPin, int clkPin, int gndPin,
-    int tarePin, double calibrationConstant); 
+    int tarePin, double calibrationConstant, int checkPin); 
 
   // This should be called in setup(). 
   // Assumes that Serial.begin has already been called.
@@ -48,7 +49,7 @@ public:
 
   // This averages and prints out the measured load.
   // Also returns the measured load value.
-  double getLoad(); 
+  double getLoad();
 
   // This checks if tare button is pressed and resets 
   //   the current reading to zero if pressed.
@@ -71,20 +72,24 @@ private:
   {
     // This is the value that tare subtracts to zero-out the reading.
     double offset = 0;
+    int actualReadings = 0;
   } state;
   // Defines the number of readings to average for the output. 
   struct Averaging
   {
     int tare = 50;
-    int load = 25;
+    int load = 10;
   } averaging;
   struct Initial
   {
-    // This is particular to every load cell and must be found empirically.
-    double calibrationConstant = 0.00001012577;
+    // This is particular to every load cell 
+    //  and must be found empirically.
+    double calibrationConstant = 0.00000998086;
     // Milliseconds to wait before doing first tare.
     int powerOnDelay = 2000;
     bool print = true;
+    double printTol = 1e-2;
+    int checkPin = -1; // if > -1, only continue averaging if HIGH.
   } initial;
 
   double average(int readings);
@@ -92,4 +97,5 @@ private:
   double readyRead();
   void startupDelay();
   int tare();
+  int checkContinue();
 };

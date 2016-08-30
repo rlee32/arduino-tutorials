@@ -1,6 +1,7 @@
 #include "LoadCell.h"
 
-LoadCell::LoadCell(int vccPin, int tarePin, double calibrationConstant)
+LoadCell::LoadCell(int vccPin, int tarePin, double calibrationConstant, 
+  int checkPin)
 {
   // Just to be clear
   pins.vcc  = vccPin;
@@ -11,11 +12,12 @@ LoadCell::LoadCell(int vccPin, int tarePin, double calibrationConstant)
   initial.calibrationConstant = calibrationConstant;
   initial.powerOnDelay = 1000;
   initial.print = true;
+  initial.checkPin = checkPin;
   loadCell = Q2HX711(pins.dat, pins.clk);
 }
 
 LoadCell::LoadCell(int vccPin, int tarePin, double calibrationConstant,
-  int powerOnDelay, bool print)
+  int powerOnDelay, bool print, int checkPin)
 {
   // Just to be clear
   pins.vcc  = vccPin;
@@ -26,11 +28,12 @@ LoadCell::LoadCell(int vccPin, int tarePin, double calibrationConstant,
   initial.calibrationConstant = calibrationConstant;
   initial.powerOnDelay = powerOnDelay;
   initial.print = print;
+  initial.checkPin = checkPin;
   loadCell = Q2HX711(pins.dat, pins.clk);
 }
 
 LoadCell::LoadCell(int vccPin, int datPin, int clkPin, int gndPin,
-    int tarePin, double calibrationConstant)
+  int tarePin, double calibrationConstant, int checkPin)
 {
   // Just to be clear
   pins.vcc  = vccPin;
@@ -41,6 +44,7 @@ LoadCell::LoadCell(int vccPin, int datPin, int clkPin, int gndPin,
   initial.calibrationConstant = calibrationConstant;
   initial.powerOnDelay = 1000;
   initial.print = true;
+  initial.checkPin = checkPin;
   loadCell = Q2HX711(pins.dat, pins.clk);
 }
 
@@ -54,12 +58,21 @@ void LoadCell::setup()
   startupDelay();
   tare();
 }
+
 double LoadCell::getLoad()
 {
-  if(initial.print) Serial.print("Reading: ");
+  if(not checkContinue()) return 0;
+  int actualReadings = averaging.load;
   double measurement = load(averaging.load);
-  if(initial.print) Serial.print(measurement);
-  if(initial.print) Serial.println(" lbs");
+  bool print = initial.print and abs(measurement) > initial.printTol;
+  if(print)
+  {
+    Serial.print("Reading (average of ");
+    Serial.print(state.actualReadings);
+    Serial.print("): ");
+    Serial.print(measurement);
+    Serial.println(" lbs");
+  }
   return measurement;
 }
 int LoadCell::checkTare()
@@ -71,21 +84,28 @@ int LoadCell::checkTare()
   }
   return measurement;
 }
-
+int LoadCell::checkContinue()
+{
+  int ret = (initial.checkPin < 0)
+    ? true : digitalRead(initial.checkPin);
+  return ret;
+}
 double LoadCell::average(int readings)
 {
   double sum = 0;
   int i = 0;
-  while(i < readings)
+  while(i < readings and checkContinue())
   {
     sum += readyRead();
     ++i;
   }
-  return sum / readings;
+  state.actualReadings = i;
+  return (i == 0) ? 0 : sum / i;
 }
 double LoadCell::load(int readings)
 {
-  return (average(readings) - state.offset)*initial.calibrationConstant;
+  double averageReading = average(readings);
+  return (averageReading - state.offset)*initial.calibrationConstant;
 }
 double LoadCell::readyRead()
 {
@@ -104,7 +124,10 @@ void LoadCell::startupDelay()
 int LoadCell::tare()
 {
   if(initial.print) Serial.print("Acquiring tare value... ");
+  int originalCheckPin = initial.checkPin;
+  initial.checkPin = -1;
   state.offset = average(averaging.tare);
+  initial.checkPin = originalCheckPin;
   if(initial.print) Serial.println("Done.");
   return state.offset;
 }
