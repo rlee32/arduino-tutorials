@@ -5,7 +5,7 @@
 #include "LoadCell.h"
 
 const int Levels = 20;
-Esc<Levels> esc(-1, 4, 2, 1000, 2000);
+Esc<Levels> esc(-1, 4, 2, 1000, 2500);
 Pot pot(A0, 23, 1000, 0, Levels - 1);
 MomentaryPushButton safety(7);
 RgbLed led(9, 10, 11);
