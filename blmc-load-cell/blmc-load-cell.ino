@@ -5,11 +5,13 @@
 #include "LoadCell.h"
 
 const int Levels = 20;
-Esc<Levels> esc(-1, 4, 2, 1000, 2000);
-Pot pot(A0, 23, 1000, 0, Levels - 1);
-MomentaryPushButton safety(7);
-RgbLed led(9, 10, 11);
-LoadCell loadCell(A5, -1, 0.00000998086, 7);
+const int checkPin = A5;
+
+Esc<Levels> esc(-1, 9, 7, 1000, 2000); // pins 7, 9
+Pot pot(A0, A1, A2, 23, 1000, 0, Levels - 1); // pins A0, A1, A2
+MomentaryPushButton safety(checkPin, A4, A3); // pins A3, A4, A5
+RgbLed led(11, 10); // pins 10, 11, 12, 13
+LoadCell loadCell(5, -1, 0.00000998086, checkPin); // pins 2, 3, 4, 5
 
 // RGB LED colors.
 const RgbLed::Color readyColor(0,1,1);
