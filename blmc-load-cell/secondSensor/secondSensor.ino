@@ -1,7 +1,8 @@
 #include "LoadCell.h"
 
-//LoadCell loadCell(A3, -1, 0.00001010916, -1);
-LoadCell loadCell(A3, -1, 0.00000998086, -1);
+//LoadCell loadCell(A3, -1, 0.00001010916, -1); // 10 kg primary sensor
+//LoadCell loadCell(A3, -1, 0.00000998086, -1); // 10 kg secondary sensor
+LoadCell loadCell(A3, -1, 1.6e-5, -1); // 30 kg
 
 void setup()
 {
