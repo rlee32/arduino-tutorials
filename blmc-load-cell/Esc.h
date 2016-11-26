@@ -62,6 +62,7 @@ int Esc<Levels>::throttle(int level)
 {
   level = constrain(level, 0, Levels-1);
   pwmDevice.writeMicroseconds(widths[level]);
+  Serial.println(widths[level]);
   return level;
 }
 
