@@ -7,7 +7,7 @@
 const int Levels = 20;
 const int checkPin = A5;
 
-Esc<Levels> esc(-1, 9, 7, 1000, 2000); // pins 7, 9
+Esc<Levels> esc(6, 9, 7, 1000, 2000); // pins 6, 7, 9 for vcc, gnd, signal
 Pot pot(A0, A1, A2, 23, 1000, 0, Levels - 1); // pins A0, A1, A2
 MomentaryPushButton safety(checkPin, A4, A3); // pins A3, A4, A5
 RgbLed led(11, 10); // pins 10, 11, 12, 13
