@@ -1,50 +1,46 @@
 #include "Pot.h"
 #include "RgbLed.h"
-#include "Motor.h"
+#include "Esc.h"
 #include "MomentaryPushButton.h"
 
 const int Levels = 20;
-Motor<Levels> motor(6, 1000, 2000);
-Pot pot(A0, 23, 1000, 0, Levels - 1);
-MomentaryPushButton safety(7);
-RgbLed led(9);
-
-// RGB LED colors.
-const RgbLed::Color readyColor(0,1,1);
-const RgbLed::Color minColor(0,1,0);
-const RgbLed::Color midColor(1,1,0);
-const RgbLed::Color maxColor(1,0,1);
+Esc<Levels> esc(10, 9, 11, 1000, 2000);
+Pot pot(A1, A0, A2, 23, 1000, 0, Levels - 1);
+MomentaryPushButton safety(A4, A5, A3);
+RgbLed led(4, 5, 7, 6);
 
 void setup()
 {
-  motor.setup();
+  esc.setup();
   pot.setup();
   safety.setup();
   led.setup();
-  // Serial.begin( 9600 );
+  Serial.begin(9600);
 }
 
 void loop()
 {
   if(safety.read())
   {
-    switch(motor.throttle(pot.readScaled()))
+    const int level = esc.throttle(pot.readScaled());
+//    Serial.println(level);
+    switch(level)
     {
       case 0:
-        led.set(minColor);
+        led.yellow();
         break;
       case Levels - 1:
-        led.set(maxColor);
+        led.blue();
         break;
       default:
-        led.set(midColor);
+        led.green();
         break;
     }
   }
   else
   {
-    motor.off();
-    led.set(readyColor);
+    esc.off();
+    led.red();
   }
 }
 
