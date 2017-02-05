@@ -23,51 +23,39 @@
  *    double loadValue = loadCell.getLoad(); // also prints
  *    double tareValue = loadCell.checkTare(); // also prints
 **/
+
 #include <Arduino.h>
 #include <Q2HX711.h>
+#include "Pin.h"
 
 class LoadCell
 {
 public:
-  // This ctor assumes load cell pins are adjacent in this order: 
-  //   VCC, DAT, CLK, Ground (GND)
-  //   This order matches the SparkFun breakout board for load cells:
-  //    https://www.sparkfun.com/products/13879
-  LoadCell(int vccPin, int tarePin, double calibrationConstant, 
-    int checkPin);
-  // This ctor gives options for power-on delay and printing.
-  LoadCell(int vccPin, int tarePin, double calibrationConstant, 
-    int powerOnDelay, bool print, int checkPin);
-  // This ctor is available if you want to manually specify pins.
-  LoadCell(int vccPin, int datPin, int clkPin, int gndPin,
-    int tarePin, double calibrationConstant, int checkPin); 
-
+  LoadCell(const PowerPin& p, const OutputPin& dat, const OutputPin& clk, const GroundPin&,
+    double calibrationConstant, bool print = true, int powerOnDelay = 1000); 
   // This should be called in setup(). 
   // Assumes that Serial.begin has already been called.
   // Open to modify to your needs/taste.
   void setup();
-
   // This averages and prints out the measured load.
   // Also returns the measured load value.
   double getLoad();
-
   // This checks if tare button is pressed and resets 
   //   the current reading to zero if pressed.
   // Also returns the tare value.
   int checkTare();
-
   void setTareAveraging(int count) { averaging.tare = count; }
   void setLoadAveraging(int count) { averaging.load = count; }
+  void setCheckPin(const InputPin& i) { check = &i; }
+  void setTarePin(const InputPin& i) { tare = &i; }
 private:
-  struct Pins
-  {
-    int vcc = 11;
-    int dat = 10;
-    int clk = 9;
-    int gnd = 8;
-    int tare = 7;
-  } pins;
-  Q2HX711 loadCell = Q2HX711(pins.dat, pins.clk);
+  const PowerPin& p;
+  const OutputPin& dat;
+  const OutputPin& clk;
+  const GroundPin& g;
+  const InputPin* tare = nullptr;
+  const InputPin* check = nullptr;
+  Q2HX711 loadCell = Q2HX711(-1, -1);
   struct State
   {
     // This is the value that tare subtracts to zero-out the reading.
@@ -89,13 +77,12 @@ private:
     int powerOnDelay = 2000;
     bool print = true;
     double printTol = 1e-2;
-    int checkPin = -1; // if > -1, only continue averaging if HIGH.
   } initial;
 
   double average(int readings);
   double load(int readings);
   double readyRead();
   void startupDelay();
-  int tare();
+  void getTareValue();
   int checkContinue();
 };

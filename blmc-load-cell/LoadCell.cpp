@@ -1,62 +1,30 @@
 #include "LoadCell.h"
 
-LoadCell::LoadCell(int vccPin, int tarePin, double calibrationConstant, 
-  int checkPin)
+LoadCell::LoadCell(const PowerPin& p, const OutputPin& dat,
+  const OutputPin& clk, const GroundPin& g,
+  double calibrationConstant, bool print, int powerOnDelay)
+  : p(p), dat(dat), clk(clk), g(g)
 {
-  // Just to be clear
-  pins.vcc  = vccPin;
-  pins.dat  = vccPin-1;
-  pins.clk  = vccPin-2;
-  pins.gnd  = vccPin-3;
-  pins.tare = tarePin;
-  initial.calibrationConstant = calibrationConstant;
-  initial.powerOnDelay = 1000;
-  initial.print = true;
-  initial.checkPin = checkPin;
-  loadCell = Q2HX711(pins.dat, pins.clk);
-}
-
-LoadCell::LoadCell(int vccPin, int tarePin, double calibrationConstant,
-  int powerOnDelay, bool print, int checkPin)
-{
-  // Just to be clear
-  pins.vcc  = vccPin;
-  pins.dat  = vccPin-1;
-  pins.clk  = vccPin-2;
-  pins.gnd  = vccPin-3;
-  pins.tare = tarePin;
   initial.calibrationConstant = calibrationConstant;
   initial.powerOnDelay = powerOnDelay;
   initial.print = print;
-  initial.checkPin = checkPin;
-  loadCell = Q2HX711(pins.dat, pins.clk);
-}
-
-LoadCell::LoadCell(int vccPin, int datPin, int clkPin, int gndPin,
-  int tarePin, double calibrationConstant, int checkPin)
-{
-  // Just to be clear
-  pins.vcc  = vccPin;
-  pins.dat  = datPin;
-  pins.clk  = clkPin;
-  pins.gnd  = gndPin;
-  pins.tare = tarePin;
-  initial.calibrationConstant = calibrationConstant;
-  initial.powerOnDelay = 1000;
-  initial.print = true;
-  initial.checkPin = checkPin;
-  loadCell = Q2HX711(pins.dat, pins.clk);
+  loadCell = Q2HX711(dat.pin, clk.pin);
 }
 
 void LoadCell::setup()
 {
-  pinMode(pins.vcc, OUTPUT);
-  pinMode(pins.gnd, OUTPUT);
-  if(pins.tare > -1) pinMode(pins.tare, INPUT);
-  digitalWrite(pins.vcc, HIGH);
-  digitalWrite(pins.gnd, LOW);
+  p.setup();
+  g.setup();
+  if(tare != nullptr)
+  {
+    tare->setup();
+  }
+  if(check != nullptr)
+  {
+    check->setup();
+  }
   startupDelay();
-  tare();
+  getTareValue();
 }
 
 double LoadCell::getLoad()
@@ -78,16 +46,19 @@ double LoadCell::getLoad()
 int LoadCell::checkTare()
 {
   int measurement = 0;
-  if(pins.tare > -1)
+  if(tare != nullptr)
   {
-    if( digitalRead(pins.tare) ) measurement = tare();
+    if(digitalRead(tare->pin))
+    {
+      getTareValue();
+      measurement = state.offset;
+    }
   }
   return measurement;
 }
 int LoadCell::checkContinue()
 {
-  int ret = (initial.checkPin < 0)
-    ? true : digitalRead(initial.checkPin);
+  int ret = (check == nullptr) ? true : digitalRead(check->pin);
   return ret;
 }
 double LoadCell::average(int readings)
@@ -117,17 +88,16 @@ void LoadCell::startupDelay()
   // Put a delay after setting VCC and GND pins 
   //  (powering on the load cell amplifier),
   //  so that readings are accurate.
-  if(initial.print) Serial.print("Startup noise delay... ");
+  if(initial.print) { Serial.print("Startup noise delay... "); }
   delay(initial.powerOnDelay);
-  if(initial.print) Serial.println("Done.");  
+  if(initial.print) { Serial.println("Done."); }  
 }
-int LoadCell::tare()
+void LoadCell::getTareValue()
 {
-  if(initial.print) Serial.print("Acquiring tare value... ");
-  int originalCheckPin = initial.checkPin;
-  initial.checkPin = -1;
+  if(initial.print) { Serial.print("Acquiring tare value... "); }
+  const InputPin* originalCheck = check;
+  check = nullptr;
   state.offset = average(averaging.tare);
-  initial.checkPin = originalCheckPin;
-  if(initial.print) Serial.println("Done.");
-  return state.offset;
+  check = originalCheck;
+  if(initial.print) { Serial.println("Done."); }
 }

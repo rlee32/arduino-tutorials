@@ -43,8 +43,6 @@ void Esc<Levels>::setup()
 {
   if(signalPin > -1)
   {
-//    Serial.print("Signal pin: ");
-//    Serial.println(signalPin);
     pwmDevice.attach(signalPin);
   }
   // simulate vcc

@@ -1,33 +1,51 @@
+#include "Pin.h"
 #include "Pot.h"
 #include "RgbLed.h"
 #include "Esc.h"
 #include "MomentaryPushButton.h"
 #include "LoadCell.h"
 
-const int Levels = 20;
-const int checkPin = A5;
+constexpr int Levels = 20; // basically, potentiometer resolution.
+// constexpr double calibrationConstant = 9.98086e-6; // 10kg secondary sensor
+constexpr double calibrationConstant = 1.6e-5; // 30kg
 
-Esc<Levels> esc(6, 9, 7, 1000, 2000); // pins 6, 7, 9 for vcc, gnd, signal
-Pot pot(A0, A1, A2, 23, 1000, 0, Levels - 1); // pins A0, A1, A2
-MomentaryPushButton safety(checkPin, A4, A3); // pins A3, A4, A5
-RgbLed led(11, 10); // pins 10, 11, 12, 13
-//LoadCell loadCell(5, -1, 0.00000998086, checkPin); // 10kg secondary sensor, pins 2-5
-LoadCell loadCell(5, -1, 1.6e-5, checkPin); // 30 kg, pins 2-5
+const auto cellg = GroundPin(2);
+const auto cellc = OutputPin(3);
+const auto celld = OutputPin(4);
+const auto cellp = PowerPin(5);
 
-// RGB LED colors.
-const RgbLed::Color readyColor(0,1,1);
-const RgbLed::Color minColor(0,1,0);
-const RgbLed::Color midColor(1,1,0);
-const RgbLed::Color maxColor(1,0,1);
+const auto escg = GroundPin(6);
+const auto escp = PowerPin(7);
+const auto esco = OutputPin(9);
+
+const auto ledp = PowerPin(10);
+const auto ledr = OutputPin(11);
+const auto ledg = OutputPin(13);
+const auto ledb = OutputPin(12);
+
+const auto poti = InputPin(A0);
+const auto potp = PowerPin(A1);
+const auto potg = GroundPin(A2);
+
+const auto momg = GroundPin(A3);
+const auto momp = PowerPin(A4);
+const auto momi = InputPin(A5);
+
+LoadCell loadCell(cellp, celld, cellc, cellg, calibrationConstant);
+Esc<Levels> esc(escp, esco, escg, 1000, 2000);
+RgbLed led(ledp, ledr, ledg, ledb);
+Pot pot(potp, poti, potg, 23, 1000, 0, Levels - 1);
+MomentaryPushButton safety(momp, momi, momg);
 
 void setup()
 {
   Serial.begin(9600);
+  loadCell.setCheckPin(momi);
   loadCell.setup();
   esc.setup();
+  led.setup();
   pot.setup();
   safety.setup();
-  led.setup();
 }
 
 void loop()
@@ -38,13 +56,13 @@ void loop()
     switch(level)
     {
       case 0:
-        led.set(minColor);
+        led.yellow();
         break;
       case Levels - 1:
-        led.set(maxColor);
+        led.blue();
         break;
       default:
-        led.set(midColor);
+        led.green();
         break;
     }
     loadCell.getLoad();
@@ -52,7 +70,7 @@ void loop()
   else
   {
     esc.off();
-    led.set(readyColor);
+    led.red();
   }
 }
 

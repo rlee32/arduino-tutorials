@@ -1,20 +1,20 @@
 #pragma once
 
 #include "Arduino.h"
+#include "Pin.h"
 
 class Pot
 {
 public:
-  Pot(int inputPin, int rawMin, int rawMax, int scaledMin, int scaledMax);
-  Pot(int inputPin, int vccPin, int gndPin, 
+  Pot(const PowerPin&, const InputPin&, const GroundPin&, 
     int rawMin, int rawMax, int scaledMin, int scaledMax);
   void setup();
   int readRaw();
   int readScaled();
 private:
-  int inputPin = -1;
-  int vccPin = -1;
-  int gndPin = -1;
+  const PowerPin& p;
+  const InputPin& i;
+  const GroundPin& g;
   int rawMin = 23;
   int rawMax = 1000;
   int scaledMin = 0;
