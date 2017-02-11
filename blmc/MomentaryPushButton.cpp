@@ -1,26 +1,17 @@
 #include "MomentaryPushButton.h"
 
-MomentaryPushButton::MomentaryPushButton(int inputPin) 
-: inputPin(inputPin) {}
-MomentaryPushButton::MomentaryPushButton(int vccPin, int inputPin, int groundPin) 
-: vccPin(vccPin), inputPin(inputPin), groundPin(groundPin) {}
+MomentaryPushButton::MomentaryPushButton(
+  const PowerPin& p, const InputPin& i, const GroundPin& g)
+  : p(p), i(i), g(g) {}
 
 void MomentaryPushButton::setup()
 {
-  pinMode(inputPin, INPUT);
-  if(vccPin > -1)
-  {
-    pinMode(vccPin, OUTPUT);
-    digitalWrite(vccPin, HIGH);
-  }
-  if(groundPin > -1)
-  {
-    pinMode(groundPin, OUTPUT);
-    digitalWrite(groundPin, LOW);
-  }
+  i.setup();
+  g.setup();
+  p.setup();
 }
 
 int MomentaryPushButton::read()
 {
-  return digitalRead(inputPin);
+  return digitalRead(i.pin);
 }

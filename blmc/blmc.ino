@@ -1,13 +1,32 @@
+#include "Pin.h"
 #include "Pot.h"
 #include "RgbLed.h"
 #include "Esc.h"
 #include "MomentaryPushButton.h"
 
-const int Levels = 20;
-Esc<Levels> esc(10, 9, 11, 1000, 2000);
-Pot pot(A1, A0, A2, 23, 1000, 0, Levels - 1);
-MomentaryPushButton safety(A4, A5, A3);
-RgbLed led(4, 5, 7, 6);
+constexpr int Levels = 20; // basically, potentiometer resolution.
+
+const auto escg = GroundPin(11);
+const auto escp = PowerPin(10);
+const auto esco = OutputPin(9);
+
+const auto ledp = PowerPin(10);
+const auto ledr = OutputPin(11);
+const auto ledg = OutputPin(13);
+const auto ledb = OutputPin(12);
+
+const auto poti = InputPin(A0);
+const auto potp = PowerPin(A1);
+const auto potg = GroundPin(A2);
+
+const auto momg = GroundPin(A3);
+const auto momp = PowerPin(A4);
+const auto momi = InputPin(A5);
+
+Esc<Levels> esc(escp, esco, escg, 1000, 2000);
+Pot pot(potp, poti, potg, 23, 1000, 0, Levels - 1);
+MomentaryPushButton safety(momp, momi, momg);
+RgbLed led(ledp, ledr, ledg, ledb);
 
 void setup()
 {

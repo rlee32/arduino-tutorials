@@ -1,21 +1,22 @@
 #pragma once
 
 #include "Arduino.h"
+#include "Pin.h"
 #include <Servo.h> // ESC uses same signals as Servo
 
 template<int Levels>
 class Esc
 {
 public:
-  Esc(int vccPin, int signalPin, int gndPin, int minWidth, int maxWidth);
+  Esc(const PowerPin&, const OutputPin&, const GroundPin&, int minWidth, int maxWidth);
   void setup();
   int throttle(int level);
   void off();
   int width(int level) { return widths[level]; }
-  int signalPin = -1;
 private:
-  int vccPin = -1;
-  int gndPin = -1;
+  const PowerPin& vcc;
+  const OutputPin& out;
+  const GroundPin& gnd;
   Servo pwmDevice;
   int widths[Levels] = {};
   int minWidth = 0; // microseconds
@@ -23,10 +24,9 @@ private:
 };
 
 template<int Levels>
-Esc<Levels>::Esc(int vccPin, int signalPin, int gndPin, 
+Esc<Levels>::Esc(const PowerPin& vcc, const OutputPin& out, const GroundPin& gnd, 
   int minWidth, int maxWidth)
-: vccPin(vccPin), signalPin(signalPin), gndPin(gndPin), 
-  minWidth(minWidth), maxWidth(maxWidth)
+  : vcc(vcc), out(out), gnd(gnd), minWidth(minWidth), maxWidth(maxWidth)
 {
   // Initialize pulse width discretization.
   int increment = (maxWidth - minWidth) / (Levels - 1);
@@ -41,22 +41,9 @@ Esc<Levels>::Esc(int vccPin, int signalPin, int gndPin,
 template<int Levels>
 void Esc<Levels>::setup()
 {
-  if(signalPin > -1)
-  {
-    pwmDevice.attach(signalPin);
-  }
-  // simulate vcc
-  if(vccPin > -1)
-  {
-    pinMode(vccPin, OUTPUT);
-    digitalWrite(vccPin, HIGH);
-  }
-  // simulate ground
-  if(gndPin > -1)
-  {
-    pinMode(gndPin, OUTPUT);
-    digitalWrite(gndPin, LOW);
-  }
+  pwmDevice.attach(out.pin);
+  gnd.setup();
+  vcc.setup();
 }
 
 template<int Levels>

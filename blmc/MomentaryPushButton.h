@@ -1,18 +1,16 @@
 #pragma once
 
 #include "Arduino.h"
+#include "Pin.h"
 
 class MomentaryPushButton
 {
 public:
-  // For externally-supplied voltage.
-  MomentaryPushButton(int inputPin);
-  // For Arduino-supplied voltage.
-  MomentaryPushButton(int vccPin, int inputPin, int groundPin);
+  MomentaryPushButton(const PowerPin&, const InputPin&, const GroundPin&);
   void setup();
   int read();
 private:
-  int inputPin = -1;
-  int vccPin = -1;
-  int groundPin = -1;
+  const PowerPin& p;
+  const InputPin& i;
+  const GroundPin& g;
 };
