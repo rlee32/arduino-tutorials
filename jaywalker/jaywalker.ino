@@ -4,7 +4,10 @@
 #include "Esc.h"
 #include "MomentaryPushButton.h"
 
-constexpr int Levels = 20; // basically, potentiometer resolution.
+constexpr int Levels = 40; // basically, potentiometer resolution.
+constexpr double FrontScale = 1;
+constexpr double BackScale = 1;
+constexpr bool Debug = true;
 
 // front motors
 const auto fescg = GroundPin(13);
@@ -45,34 +48,58 @@ void setup()
   pot.setup();
   safety.setup();
   led.setup();
-  Serial.begin(9600);
+  if (Debug)
+  {
+    Serial.begin(9600);
+  }
+}
+
+void fireLight(const int level)
+{
+  switch(level)
+  {
+    case 0:
+      led.yellow();
+      break;
+    case Levels - 1:
+      led.blue();
+      break;
+    default:
+      led.green();
+      break;
+  }
+}
+
+void fire(const int scaledPotSignal)
+{
+  const int flevel = fesc.throttle(FrontScale * scaledPotSignal);
+  const int blevel = besc.throttle(BackScale * scaledPotSignal);
+  fireLight(flevel);
+  if (Debug)
+  {
+    Serial.print("Front, back levels: ");
+    Serial.print(flevel);
+    Serial.print(", ");
+    Serial.println(blevel);
+  }
+}
+
+void off()
+{
+  fesc.off();
+  besc.off();
+  led.red();
 }
 
 void loop()
 {
   if(safety.read())
   {
-    const int flevel = fesc.throttle(pot.readScaled());
-    const int blevel = besc.throttle(pot.readScaled());
-//    Serial.println(level);
-    switch(flevel)
-    {
-      case 0:
-        led.yellow();
-        break;
-      case Levels - 1:
-        led.blue();
-        break;
-      default:
-        led.green();
-        break;
-    }
+    fire(pot.readScaled());
   }
   else
   {
-    fesc.off();
-    besc.off();
-    led.red();
+    off();
   }
 }
 
